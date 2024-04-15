@@ -26,11 +26,15 @@ class PathSim(object):
     """
     pathsim算法的实现类，元路径为P=(PlPl')，给定Pl的关系矩阵m和P的关系矩阵
     M对角线上的值，计算与查询对象相似的top-k对象
+
+    En:
+    Implementation class of the pathsim algorithm, the meta-path is P = (PlPl'), given the relationship matrix m of Pl and the relationship matrix of P
+    The value on the diagonal of M calculates the top-k objects similar to the query object
     """
 
     def __init__(self, m, diag, dense=False):
-        self.m = m  # Pl的关系矩阵m
-        self.diag = diag  # P的关系矩阵M对角线上的值
+        self.m = m  # Pl的关系矩阵m -- (En: Relationship matrix m of Pl)
+        self.diag = diag  # P的关系矩阵M对角线上的值 -- (En: The value on the diagonal of the relationship matrix M of P)
         self.dense = dense
 
     def baseline(self, x, k):
@@ -40,7 +44,7 @@ class PathSim(object):
         :param k: 要找到的相似对象的数量
         :return: k个相似对象的list，按相似度降序排列
         """
-        candidate = []  # 找到候选对象
+        candidate = []  # 找到候选对象 -- (En: Find candidate objects)
         if self.dense == False:
             for i in range(len(self.m[x])):
                 if self.m[x][i] != 0:
@@ -51,13 +55,17 @@ class PathSim(object):
                             candidate.append(j)
         else:
             for i in range(len(self.m)):
-                candidate.append(i)  # 稠密矩阵中，不需要通过邻居的邻居来寻找candidate
-        mt = []  # 候选对象所在行向量组成矩阵
+                candidate.append(
+                    i
+                )  # 稠密矩阵中，不需要通过邻居的邻居来寻找candidate -- (En: In a dense matrix, you don't need to find candidates through neighbors' neighbors)
+        mt = (
+            []
+        )  # 候选对象所在行向量组成矩阵 -- (En: The matrix composed of row vectors where the candidate objects are located)
         for i in range(len(candidate)):
             mt.append(self.m[candidate[i]])
         mx1 = (
             np.mat(self.m[x]) * np.mat(mt).T
-        )  # 矩阵乘法找到每个候选对象candidate[i]对应的M[x][i]
+        )  # 矩阵乘法找到每个候选对象candidate[i]对应的M[x][i] -- (En: Matrix multiplication finds M[x][i] corresponding to each candidate object candidate[i])
         mx = np.array(mx1)[0]
         # print(mx)
         sim = []
@@ -77,11 +85,16 @@ class PathSim(object):
     def pruning_init(self):
         """
         剪枝算法前对矩阵进行分块和统计的预处理
+
+        En:
+        Preprocessing of matrix partitioning and statistics before pruning algorithm
         """
         mt = np.array(np.mat(self.m).T)
         self.cluster_num = 3
         cluster_num = self.cluster_num
-        self.model = co_cluster.Cluster(mt, self.cluster_num)  # 重聚类
+        self.model = co_cluster.Cluster(
+            mt, self.cluster_num
+        )  # 重聚类 -- (En: Re-clustering)
         print("co-clustering done")
         information = []
         for i in range(0, self.cluster_num * self.cluster_num):
@@ -91,9 +104,11 @@ class PathSim(object):
             infor["t1"] = np.sum(sub_m, axis=0)
             infor["tt1"] = np.sum(sub_m**2, axis=0)
             information.append(infor)
-        self.T = np.zeros((cluster_num, cluster_num))  # 每个块的元素和
-        self.T1 = []  # 每个块的列和
-        self.TT1 = []  # 每个块的列平方和
+        self.T = np.zeros(
+            (cluster_num, cluster_num)
+        )  # 每个块的元素和 -- (En: Sum of elements in each block)
+        self.T1 = []  # 每个块的列和 -- (En: Column sum of each block)
+        self.TT1 = []  # 每个块的列平方和   -- (En: Column square sum of each block)
         for i in range(cluster_num):
             self.T1.append([])
             self.TT1.append([])
@@ -110,8 +125,15 @@ class PathSim(object):
         :param x: 查询对象编号
         :param k: 要找到的相似对象的数量
         :return: k个相似对象的list，按相似度降序排列
+
+        En:
+        pathsim-pruning algorithm
+        :param x: query object number
+        :param k: number of similar objects to find
+        :return: list of k similar objects, sorted in descending order of similarity
+
         """
-        candidate = []  # 找到候选对象
+        candidate = []  # 找到候选对象 -- (En: Find candidate objects)
         if self.dense == False:
             for i in range(len(self.m[x])):
                 if self.m[x][i] != 0:
@@ -122,7 +144,9 @@ class PathSim(object):
                             candidate.append(j)
         else:
             for i in range(len(self.m)):
-                candidate.append(i)  # 稠密矩阵中，不需要通过邻居的邻居来寻找candidate
+                candidate.append(
+                    i
+                )  # 稠密矩阵中，不需要通过邻居的邻居来寻找candidate -- (En: In a dense matrix, you don't need to find candidates through neighbors' neighbors)
         cluster_num = self.cluster_num
         xt = self.m[x]
         row_label = self.model.row_labels_
@@ -139,7 +163,9 @@ class PathSim(object):
             x2[cluster] += xt[i] * xt[i]
         for i in range(cluster_num):
             x2[i] = math.sqrt(x2[i])
-        upperbound = np.zeros(cluster_num)  # 每个块的相似度上界
+        upperbound = np.zeros(
+            cluster_num
+        )  # 每个块的相似度上界 -- (En: Upper bound of similarity for each block)
         for i in range(cluster_num):
             upper = 2 * np.mat(x1) * np.mat(self.T[:, i]).T / (self.diag[x] + 1)[0][0]
             upperbound[i] = upper
@@ -155,11 +181,13 @@ class PathSim(object):
             bias[i] = bias[i - 1] + length[i - 1]
         for i in cluster:
             if len(s) >= k and upperbound[i] <= s[len(s) - k].val:
-                break  # 块剪枝
+                break  # 块剪枝 -- (En: Block pruning)
             column = self.model.get_indices(i)
             for id in range(0, len(column[1])):
                 if column[1][id] in candidate:
-                    j = id + bias[i]  # 计算每个候选对象在重聚类后的矩阵中对应的列
+                    j = (
+                        id + bias[i]
+                    )  # 计算每个候选对象在重聚类后的矩阵中对应的列 -- (En: Calculate the corresponding column of each candidate object in the re-clustered matrix)
                     upper = (
                         2
                         * np.mat(x2)
@@ -169,7 +197,7 @@ class PathSim(object):
                     if len(s) >= k:
                         if upper <= s[len(s) - k].val:
                             print("pruning:" + str(j))
-                            continue  # 计算相似度上界后进行剪枝
+                            continue  # 计算相似度上界后进行剪枝 -- (En: Pruning after calculating the similarity upper bound)
                     val = (
                         2
                         * np.mat(xt)

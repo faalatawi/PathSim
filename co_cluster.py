@@ -1,5 +1,4 @@
 import numpy as np
-import math
 
 
 class Cluster(object):
@@ -7,6 +6,11 @@ class Cluster(object):
     重聚类的实现，row cluster_j的特征向量第i维是p(column cluster i | row cluster j)
     row_j的特征向量第i维是p(column cluster i | row_j)，每个row被分配到与其特征向量距离
     最近的row cluster， column cluster同理，反复迭代
+
+    Translate to English:
+    Implementation of re-clustering, the i-th dimension of the feature vector of row cluster_j is p(column cluster i | row cluster j)
+     The i-th dimension of the feature vector of row_j is p(column cluster i | row_j), and each row is assigned a distance from its feature vector
+     The nearest row cluster and column cluster are the same and iterated repeatedly.
     """
 
     def __init__(self, m, n_cluster):
@@ -19,7 +23,7 @@ class Cluster(object):
         row_batch = row_num // n_cluster + 1
         col_batch = col_num // n_cluster + 1
         """
-        对行和列的cluster初始化，先均匀分为n_cluster个类
+        对行和列的cluster初始化，先均匀分为n_cluster个类 -- (EN: Initialize the clusters of rows and columns, and divide them into n_cluster classes first)
         """
         for i in range(n_cluster):
             row_end = (i + 1) * row_batch
@@ -38,7 +42,7 @@ class Cluster(object):
                 new_r.append([])
                 new_c.append([])
             """
-            列的重新分配
+            列的重新分配 -- (EN: Re-allocation of columns)
             """
             rows_p = []
             for i in range(n_cluster):
@@ -74,7 +78,7 @@ class Cluster(object):
                         cluster = j
                 new_r[cluster].append(i)
             """
-            行的重新分配
+            行的重新分配 -- (EN: Re-allocation of rows)
             """
             cols_p = []
             n = np.array(m.T)
@@ -131,6 +135,12 @@ class Cluster(object):
         :param i: 块的编号
         :param data: 原矩阵
         :return: 子矩阵
+
+        EN:
+        Find the submatrix corresponding to the i-th block
+        :param i: block number
+        :param data: original matrix
+        :return: submatrix
         """
         row = i // self.n_cluster
         col = i % self.n_cluster
@@ -143,6 +153,11 @@ class Cluster(object):
         找到第i个块对应的行和列编号
         :param i: 块的编号
         :return: 一个数组，第一维是行编号的列表，第二位是列编号的列表
+
+        En:
+        Find the row and column numbers corresponding to the i-th block
+        :param i: block number
+        :return: An array, the first dimension is the list of row numbers, and the second dimension is the list of column numbers
         """
         row = i // self.n_cluster
         col = i % self.n_cluster

@@ -4,16 +4,18 @@ import heapq
 
 class PPageRank(object):
     """
-    personalized pagerank 的实现
+    personalized pagerank 的实现 -- (En: Implementation of personalized pagerank)
     """
 
     def __init__(self, m, p):
-        self.m = m  # 邻接矩阵
+        self.m = m  # 邻接矩阵 -- (En: Adjacency matrix)
         self.p = p
         self.d = np.zeros((len(m), len(m[0])))
         for i in range(len(m)):
             self.d[i][i] = 1 / np.sum(m[i])
-        self.GD = np.mat(self.m) * np.mat(self.d)  # 对邻接矩阵归一化，使其列和为1
+        self.GD = np.mat(self.m) * np.mat(
+            self.d
+        )  # 对邻接矩阵归一化，使其列和为1 -- (En: Normalize the adjacency matrix so that the sum of its columns is 1)
 
     def find_topk(self, x, k):
         """
@@ -23,7 +25,9 @@ class PPageRank(object):
         :return: k个相似对象的list，按相似度降序排列
         """
         t = np.zeros((len(self.m), len(self.m[0])))
-        t[x][x] = 1  # 将待查询的对象设置为personalized pagerank中感兴趣的主题
+        t[x][
+            x
+        ] = 1  # 将待查询的对象设置为personalized pagerank中感兴趣的主题 -- (En: Set the object to be queried as the topic of interest in personalized pagerank)
         v = []
         for i in range(len(self.m)):
             v.append(1 / len(self.m))

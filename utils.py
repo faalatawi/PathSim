@@ -10,6 +10,15 @@ def load_data():
               num_paper_map，num_venue_map同上
               paper_author_adj：numpy数组，paper和author的邻接矩阵
               paper_venue_adj：同上
+
+    En:
+    Data processing
+    :return: author_info: dictionary, the key is the author's number in the original dataset, and the value is a dictionary of {"num": the new number starting from 0, "name": the author's name}
+                paper_info, venue_info as above
+                num_author_map: dictionary, the key is the new number of the author, and the value is the original number of the author, in order to find the author's specific information through the new number used in the algorithm
+                num_paper_map, num_venue_map as above
+                paper_author_adj: numpy array, adjacency matrix of paper and author
+                paper_venue_adj: as above
     """
     print("loading data...")
     f1 = open("data/author.txt")
