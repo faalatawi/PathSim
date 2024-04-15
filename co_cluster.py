@@ -1,12 +1,14 @@
 import numpy as np
 import math
 
+
 class Cluster(object):
-    '''
+    """
     重聚类的实现，row cluster_j的特征向量第i维是p(column cluster i | row cluster j)
     row_j的特征向量第i维是p(column cluster i | row_j)，每个row被分配到与其特征向量距离
     最近的row cluster， column cluster同理，反复迭代
-    '''
+    """
+
     def __init__(self, m, n_cluster):
         self.m = m
         self.n_cluster = n_cluster
@@ -16,9 +18,9 @@ class Cluster(object):
         col_num = len(m[0])
         row_batch = row_num // n_cluster + 1
         col_batch = col_num // n_cluster + 1
-        '''
+        """
         对行和列的cluster初始化，先均匀分为n_cluster个类
-        '''
+        """
         for i in range(n_cluster):
             row_end = (i + 1) * row_batch
             if row_end > row_num:
@@ -35,9 +37,9 @@ class Cluster(object):
             for i in range(n_cluster):
                 new_r.append([])
                 new_c.append([])
-            '''
+            """
             列的重新分配
-            '''
+            """
             rows_p = []
             for i in range(n_cluster):
                 row_p = []
@@ -71,9 +73,9 @@ class Cluster(object):
                         min1 = dist
                         cluster = j
                 new_r[cluster].append(i)
-            '''
+            """
             行的重新分配
-            '''
+            """
             cols_p = []
             n = np.array(m.T)
             for i in range(n_cluster):
@@ -124,12 +126,12 @@ class Cluster(object):
                 self.column_labels_[col] = i
 
     def get_submatrix(self, i, data):
-        '''
+        """
         找到第i个块对应的子矩阵
         :param i: 块的编号
         :param data: 原矩阵
         :return: 子矩阵
-        '''
+        """
         row = i // self.n_cluster
         col = i % self.n_cluster
         b = data[self.rows[row]]
@@ -137,17 +139,14 @@ class Cluster(object):
         return sub
 
     def get_indices(self, i):
-        '''
+        """
         找到第i个块对应的行和列编号
         :param i: 块的编号
         :return: 一个数组，第一维是行编号的列表，第二位是列编号的列表
-        '''
+        """
         row = i // self.n_cluster
         col = i % self.n_cluster
         r = []
         r.append(self.rows[row])
         r.append(self.cols[col])
         return r
-
-
-

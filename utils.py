@@ -1,6 +1,8 @@
 import numpy as np
+
+
 def load_data():
-    '''
+    """
     数据处理
     :return: author_info：字典，键为作者在原数据集编号，值为{"num":从0开始的新编号, "name"：作者姓名}的字典
               paper_info，venue_info同上
@@ -8,7 +10,7 @@ def load_data():
               num_paper_map，num_venue_map同上
               paper_author_adj：numpy数组，paper和author的邻接矩阵
               paper_venue_adj：同上
-    '''
+    """
     print("loading data...")
     f1 = open("data/author.txt")
     f2 = open("data/paper.txt")
@@ -63,5 +65,13 @@ def load_data():
     print("authors:" + str(author_num))
     print("papers:" + str(paper_num))
     print("venues:" + str(venue_num))
-    return author_info, paper_info, venue_info, num_author_map, num_paper_map, num_venue_map, paper_author_adj, \
-           paper_venue_adj
+    return (
+        author_info,
+        paper_info,
+        venue_info,
+        num_author_map,
+        num_paper_map,
+        num_venue_map,
+        paper_author_adj,
+        paper_venue_adj,
+    )
